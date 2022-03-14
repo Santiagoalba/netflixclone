@@ -1,16 +1,37 @@
-import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from "react";
+import axios from "../axios";
+import "../css/Movierow.css";
 
-function Movierow({ title }) {
+function Movierow({ title, fetchUrl, isLargeRow }) {
+  const [movies, setMovies] = useState([]);
+  const baseURL = "https://image.tmdb.org/t/p/original";
 
-    const [movies, setMovies] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const request = await axios.get(fetchUrl);
+      setMovies(request.data.results);
+      return request;
+    }
+    fetchData();
+  }, [fetchUrl]);
+
+  console.log(movies);
 
   return (
-      <>
-        <h2>{title}</h2>
-        <div className='movieImages'></div>
-      </>
-  )
+    <div className="row">
+      <h2>{title}</h2>
+      <div className={`row__posters ${isLargeRow && "row_postersLarge"}`}>
+        {movies.map((movie) => (
+          <img
+            src={`${baseURL}${
+              isLargeRow ? movie.poster_path : movie.backdrop_path
+            }`}
+            key={movie.id}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
-export default Movierow
+export default Movierow;
